@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class User extends Model
 {
 
-//    protected $table = 'users';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +18,6 @@ class User extends Model
         'name',
         'email',
         'password',
-        'role',
     ];
 
     /**
@@ -27,7 +26,7 @@ class User extends Model
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'role'
     ];
 
     public function albums() {
