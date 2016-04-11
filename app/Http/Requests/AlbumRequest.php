@@ -16,8 +16,6 @@ abstract class AlbumRequest extends Request
         return [
             'name' => 'required|min:3',
             'description' => 'required|min:3',
-//            'public' => 'required|boolean',
-//            'author' => 'required'
         ];
     }
 }

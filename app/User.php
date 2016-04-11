@@ -26,11 +26,24 @@ class User extends Model
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'role'
+        'password', 'remember_token', 'role', 'api_token', 'pivot',
     ];
 
-    public function albums() {
-        return $this->belongsToMany('App\Album', 'album_user')->withTimestamps();
+    public function ownAlbums() {
+        return $this->hasMany('App\Album');
     }
 
+    public function availableAlbums() {
+        return $this->belongsToMany('App\Album', 'album_user');
+    }
+
+//    public function getOwnAlbumsListAttribute()
+//    {
+//        return $this->ownAlbums->lists('id')->toArray();
+//    }
+//
+//    public function getAvailableAlbumsListAttribute()
+//    {
+//        return $this->availableAlbums->lists('id')->toArray();
+//    }
 }

@@ -11,9 +11,12 @@ class AlbumUserTableSeeder extends Seeder
      */
     public function run()
     {
+        $dictionary = array('read', 'write');
+        
         DB::table('album_user')->insert([
-            'user_id' => random_int(42, 51),
-            'album_id' => random_int(5, 74),
+            'user_id' => random_int(103, 112),
+            'album_id' => random_int(142, 201),
+            'permission' => $dictionary[random_int(0,1)],
         ]);
     }
 }

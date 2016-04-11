@@ -2,13 +2,11 @@
 
 namespace App;
 
-
 use Illuminate\Database\Eloquent\Model;
-
 
 class Album extends Model
 {
-//    protected $table = 'albums';
+    protected $table = 'albums';
 
     protected  $fillable = [
         'name',
@@ -17,9 +15,23 @@ class Album extends Model
         'user_id'
     ];
 
-    public function users()
+    protected $hidden = [
+        'pivot',
+    ];
+
+    public function owner()
     {
-        return $this->belongsToMany('App\User', 'album_user')->withTimestamps();
+        return $this->belongsTo('App\User', 'user_id');
     }
+
+    public function available_users()
+    {
+        return $this->belongsToMany('App\User', 'album_user');
+    }
+
+//    public function get_author_id()
+//    {
+//        return $this->owner()->getParent();
+//    }
     
 }

@@ -16,6 +16,7 @@ class UsersTableSeeder extends Seeder
             'email' => str_random(10).'@gmail.com',
             'password' => bcrypt('secret'),
             'role' => 'user',
+            'api_token' => '12345'.str_random(10),
         ]);
     }
 }

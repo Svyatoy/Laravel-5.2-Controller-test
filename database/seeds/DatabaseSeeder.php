@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
         //factory(Album::class, 60)->create();
         //factory(Album::class, 60)->create();
         
-        for ($i = 0; $i < 101; $i++) {
-            $this->call(AlbumUserTableSeeder::class);
-        }
+//        for ($i = 0; $i < 100; $i++) {
+//            $this->call(AlbumUserTableSeeder::class);
+//        }
         
         Model::reguard();
     }

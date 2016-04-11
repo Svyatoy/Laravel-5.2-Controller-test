@@ -19,14 +19,26 @@ Route::get('home', function () {
     return view('home');
 });
 
-Route::group(['prefix' => 'api'], function () {
+Route::group(['prefix' => 'api/v1.1'], function () {
 
     Route::resource('users', 'UserController', ['only' =>[
-        'index', 'store', 'show', 'update', 'destroy'
+        'store'
     ]]);
+    
+//    Route::group(['prefix' => 'admin', 'middleware' => ['admin', 'api']], function () {
+//        Route::resource('users', 'UserController');
+//        Route::resource('albums', 'AlbumController');
+//    });
 
-    Route::resource('albums', 'AlbumController', ['only' =>[
-        'index', 'store', 'show', 'update', 'destroy'
-    ]]);
+    Route::group(['middleware' => ['api']], function () {
+
+        Route::resource('users','UserController',['only' =>[
+        'show', 'update', 'destroy'
+        ]]);
+
+        Route::resource('albums', 'AlbumController', ['only' =>[
+            'index', 'store', 'show', 'update', 'destroy'
+        ]]);
+    });
+
 });
-//Route::auth();

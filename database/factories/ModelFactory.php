@@ -11,6 +11,8 @@
 |
 */
 
+use Carbon\Carbon;
+
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
@@ -18,14 +20,19 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
         'role' => 'user',
         'password' => bcrypt('secret'),
         'remember_token' => str_random(10),
+        'api_token' => '123'.random_int(10, 100),
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
     ];
 });
 
 $factory->define(App\Album::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->sentence,
-        'description' => $faker->paragraph,
-        'public' => 1,
-        'user_id' => random_int(42, 50),
+        'name' => $faker->sentence($nbWords = 6, $variableNbWords = true),
+        'description' => $faker->text($maxNbChars = 200),
+        'public' => random_int(0, 1),
+        'user_id' => random_int(103, 112),
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
     ];
 });

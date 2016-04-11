@@ -9,6 +9,15 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
+//    public function __construct()
+//    {
+//        $this->middleware('admin', ['except'=>['create','update', 'store', 'destroy']]);
+//        $this->middleware('api', ['only'=>['index', 'update', 'store', 'destroy']]);
+//    }
+//    
     public function index()
     {
         $users = User::all();
