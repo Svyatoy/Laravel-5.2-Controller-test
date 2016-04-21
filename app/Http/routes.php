@@ -15,30 +15,35 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('home', function () {
-    return view('home');
+//Route::get('home', function () {
+//    return view('home');
+//});
+
+Route::get('login', function(){
+    return 1;
+});
+Route::get('logout', function(){
+    return 2;
+});
+Route::get('authenticate', function(){
+    return 3;
 });
 
 Route::group(['prefix' => 'api/v1.1'], function () {
 
-    Route::resource('users', 'UserController', ['only' =>[
-        'store'
+    Route::post('register', 'UserController@store');
+    Route::post('authenticate', 'TokenController@authenticate');
+    Route::get('refresh', 'TokenController@refresh');
+    Route::get('logout', 'TokenController@logout');
+    Route::get('authenticate/user', 'TokenController@getAuthenticatedUser');
+
+    Route::resource('users','UserController',['only' =>[
+        'index', 'show', 'update', 'destroy'
     ]]);
-    
-//    Route::group(['prefix' => 'admin', 'middleware' => ['admin', 'api']], function () {
-//        Route::resource('users', 'UserController');
-//        Route::resource('albums', 'AlbumController');
-//    });
+    Route::get('users/{users}/albums', 'UserController@getUserAlbums');
 
-    Route::group(['middleware' => ['api']], function () {
-
-        Route::resource('users','UserController',['only' =>[
-        'show', 'update', 'destroy'
-        ]]);
-
-        Route::resource('albums', 'AlbumController', ['only' =>[
-            'index', 'store', 'show', 'update', 'destroy'
-        ]]);
-    });
+    Route::resource('albums', 'AlbumController', ['only' =>[
+        'index', 'store', 'show', 'update', 'destroy'
+    ]]);
 
 });

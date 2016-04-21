@@ -6,7 +6,7 @@ use Illuminate\Http\Exception\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
 
-class AlbumRequest extends Request
+class UserRequest extends Request
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,9 +15,9 @@ class AlbumRequest extends Request
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
-    
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,8 +27,8 @@ class AlbumRequest extends Request
     {
         return [
             'name' => 'required|min:3',
-            'description' => 'required|min:3',
-            'public' => 'required|bool',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
         ];
     }
 
@@ -43,5 +43,4 @@ class AlbumRequest extends Request
     {
         return new JsonResponse($errors, 422);
     }
-
 }

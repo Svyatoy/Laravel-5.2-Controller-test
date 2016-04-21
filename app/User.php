@@ -2,12 +2,12 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
 
-    protected $table = 'users';
+    //protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +18,7 @@ class User extends Model
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -37,13 +38,12 @@ class User extends Model
         return $this->belongsToMany('App\Album', 'album_user');
     }
 
-//    public function getOwnAlbumsListAttribute()
-//    {
-//        return $this->ownAlbums->lists('id')->toArray();
-//    }
-//
-//    public function getAvailableAlbumsListAttribute()
-//    {
-//        return $this->availableAlbums->lists('id')->toArray();
-//    }
+    public function isAdmin() {
+        if ($this->role === 'admin') {
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
 }
