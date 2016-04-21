@@ -15,18 +15,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('home', function () {
-//    return view('home');
-//});
-
-Route::get('login', function(){
-    return 1;
-});
-Route::get('logout', function(){
-    return 2;
-});
-Route::get('authenticate', function(){
-    return 3;
+Route::get('home', function () {
+    return view('home');
 });
 
 Route::group(['prefix' => 'api/v1.1'], function () {
