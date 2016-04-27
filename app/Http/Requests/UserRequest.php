@@ -32,6 +32,11 @@ class UserRequest extends Request
         ];
     }
 
+    /**
+     * Bad validation errors output.
+     *
+     * @param Validator $validator
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException($this->response(
@@ -39,6 +44,12 @@ class UserRequest extends Request
         ));
     }
 
+    /**
+     * Response output format.
+     *
+     * @param array $errors
+     * @return JsonResponse
+     */
     public function response(array $errors)
     {
         return new JsonResponse($errors, 422);
