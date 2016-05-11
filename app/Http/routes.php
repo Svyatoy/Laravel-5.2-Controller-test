@@ -21,6 +21,9 @@ Route::get('home', function () {
 
 Route::group(['prefix' => 'api/v1.1'], function () {
 
+    Route::post('reset', 'PasswordResetController@store');
+    Route::put('reset', 'PasswordResetController@update');
+
     Route::post('authenticate', 'TokenController@authenticate');
     Route::get('refresh', 'TokenController@refresh');
     Route::get('logout', 'TokenController@logout');

@@ -30,6 +30,10 @@ class User extends Authenticatable
         'password', 'remember_token', 'role', 'api_token', 'pivot',
     ];
 
+    public function resetToken() {
+        return $this->hasMany('App\Reset', 'email', 'email');
+    }
+    
     public function ownAlbums() {
         return $this->hasMany('App\Album');
     }
