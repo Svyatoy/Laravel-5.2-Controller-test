@@ -52,5 +52,11 @@ System has 2 types of users:
 - admin 
 - user
 
+####Thumb Photos edit
+To start the scheduler itself, only need to add one cron job on the server (using the crontab -e command), which executes `php /path/to/artisan schedule:run` every minute in the day:
+```
+* * * * * php /path/to/artisan schedule:run 1>> /dev/null 2>&1
+```
+
 ## Documentation
 For more information see `http://rest-api.com/docs/`
