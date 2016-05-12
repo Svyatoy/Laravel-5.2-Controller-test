@@ -9,6 +9,8 @@
         "laravel/framework": "5.2.*",
         "tymon/jwt-auth": "0.5.*",
         "intervention/image": "^2.3"
+        "codeception/codeception": "^2.1",
+        "flow/jsonpath": ">0.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -27,7 +29,7 @@
     },
     "autoload-dev": {
         "classmap": [
-            "tests/TestCase.php"
+            "tests/api/ApiCest.php"
         ]
     },
     "scripts": {
