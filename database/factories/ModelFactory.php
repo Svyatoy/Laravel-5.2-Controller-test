@@ -36,3 +36,12 @@ $factory->define(App\Album::class, function (Faker\Generator $faker) {
         'updated_at' => Carbon::now()->toDateTimeString(),
     ];
 });
+
+$factory->define(App\Photo::class, function (Faker\Generator $faker) {
+    return [
+        'description' => $faker->text($maxNbChars = 200),
+        'album_id' => random_int(142, 210),
+        'created_at' => Carbon::now()->toDateTimeString(),
+        'updated_at' => Carbon::now()->toDateTimeString(),
+    ];
+});

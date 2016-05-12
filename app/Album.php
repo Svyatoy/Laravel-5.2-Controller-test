@@ -28,10 +28,10 @@ class Album extends Model
     {
         return $this->belongsToMany('App\User', 'album_user');
     }
-
-//    public function get_author_id()
-//    {
-//        return $this->owner()->getParent();
-//    }
+    
+    public function photos()
+    {
+        return $this->hasMany('App\Photo', 'album_id', 'id');
+    }
     
 }

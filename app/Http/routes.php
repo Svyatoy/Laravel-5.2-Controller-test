@@ -38,4 +38,8 @@ Route::group(['prefix' => 'api/v1.1'], function () {
         'index', 'store', 'show', 'update', 'destroy'
     ]]);
 
+    Route::resource('photos', 'PhotoController', ['only' =>[
+        'index', 'store', 'show', 'destroy'
+    ]]);
+
 });
