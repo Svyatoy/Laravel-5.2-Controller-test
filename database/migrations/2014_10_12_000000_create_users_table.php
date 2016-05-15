@@ -14,12 +14,15 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('role');
+            $table->string('name', 255);
+            $table->string('email');
+            $table->enum('role', ['admin', 'user'])->default('user');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            // Add index
+            $table->unique('email');
         });
     }
 
@@ -30,6 +33,12 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
+        // Drop index
+        Schema::table('users', function(Blueprint $table) {
+            $table->dropIndex('users_email_index');
+        });
+
+        // Drop table
         Schema::drop('users');
     }
 }

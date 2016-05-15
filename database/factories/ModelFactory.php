@@ -13,6 +13,9 @@
 
 use Carbon\Carbon;
 
+/**
+ * User model factory. Creates user using Faker generator
+ */
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->name,
@@ -26,20 +29,28 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
     ];
 });
 
+/**
+ * Album model factory. Creates album using Faker generator
+ */
 $factory->define(App\Album::class, function (Faker\Generator $faker) {
     return [
         'name' => $faker->sentence($nbWords = 6, $variableNbWords = true),
         'description' => $faker->text($maxNbChars = 200),
         'public' => random_int(0, 1),
+        // Id's for testing
         'user_id' => random_int(103, 112),
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),
     ];
 });
 
+/**
+ * Photo model factory. Creates album using Faker generator
+ */
 $factory->define(App\Photo::class, function (Faker\Generator $faker) {
     return [
         'description' => $faker->text($maxNbChars = 200),
+        // Id's for testing
         'album_id' => random_int(142, 210),
         'created_at' => Carbon::now()->toDateTimeString(),
         'updated_at' => Carbon::now()->toDateTimeString(),

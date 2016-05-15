@@ -12,6 +12,11 @@ use Mail;
 use Psy\Util\Json;
 use Validator;
 
+/**
+ * Class PasswordResetController
+ * 
+ * Serves to store, send and provide user's password reset tokens
+ */
 class PasswordResetController extends Controller
 {
     /**

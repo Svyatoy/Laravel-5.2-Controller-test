@@ -9,10 +9,13 @@ use JWTAuth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
-
+/**
+ * Class TokenController
+ * 
+ * Serves to authenticate user via tokens
+ */
 class TokenController extends Controller
 {
-
     /**
      * @api {post} /authenticate Create new token
      * @apiGroup Authentication
@@ -43,6 +46,8 @@ class TokenController extends Controller
      *     {
      *       "error": "could_not_create_token"
      *     }
+     * @param Request $request
+     * @return
      */
     public function authenticate(Request $request)
     {

@@ -6,6 +6,11 @@ use App\Album;
 use App\Http\Requests\AlbumRequest;
 use JWTAuth;
 
+/**
+ * Class AlbumController
+ * 
+ * Serves to provide all requests to Album class
+ */
 class AlbumController extends Controller
 {
     /**

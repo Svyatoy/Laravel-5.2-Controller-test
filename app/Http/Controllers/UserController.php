@@ -5,11 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\User;
-
 use JWTAuth;
-
 use Hash;
 
+/**
+ * Class UserController
+ * 
+ * Serves to provide all requests to User class
+ */
 class UserController extends Controller
 {
     /**

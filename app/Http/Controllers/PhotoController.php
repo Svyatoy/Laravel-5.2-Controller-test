@@ -8,6 +8,11 @@ use App\Photo;
 use App\ResizedPhoto;
 use App\Http\Requests;
 
+/**
+ * Class PhotoController
+ * 
+ * Serves to provide all requests to Photo class
+ */
 class PhotoController extends Controller
 {
     /**
