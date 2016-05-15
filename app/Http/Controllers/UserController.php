@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\User;
 
 use JWTAuth;
@@ -16,7 +17,9 @@ class UserController extends Controller
      */
     public function __construct()
     {
+        // Authentication check. User can be unauthenticated only to create new user.
         $this->middleware('jwt.auth', ['except' => ['store']]);
+        // Only admins can see all users and delete them.
         $this->middleware('admin', ['only'=>['index', 'destroy']]);
     }
 
@@ -63,8 +66,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return response()->json($users, 200);
+        return response()->json(User::all(), 200);
     }
 
     /**
@@ -111,20 +113,24 @@ class UserController extends Controller
      *     {
      *       "error": "Forbidden to see this user"
      *     }
+     * @param $id
+     * @return
      */
     public function show($id)
     {
-        $user_authenticated = auth()->user();
+        // Find user by id
         $user = User::find($id);
 
+        // Check if user exists
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        if ($user_authenticated === $user || $user->role === 'admin') {
-            return response()->json($user)->setStatusCode(200);
-        }
-        return response()->json(['error' => 'Forbidden to see this user'], 403);
+        // Check if authenticated user can see requested user
+        $this->authorize($user);
+
+        // If authorization passed - return user
+        return response()->json($user, 200);
     }
 
     /**
@@ -132,7 +138,7 @@ class UserController extends Controller
      * @apiGroup Users
      *
      * @apiParam {Number} id Users unique ID.
-     * 
+     *
      * @apiParam (Login) {String} pass Only logged in users can post this.
      *                                 In generated documentation a separate
      *                                 "Login" Block will be generated.
@@ -191,21 +197,24 @@ class UserController extends Controller
      *     {
      *       "error": "Forbidden to see albums of this user"
      *     }
+     * @param $id
+     * @return
      */
     public function getUserAlbums($id)
     {
-        $user_authenticated = auth()->user();
+        // Find user by id
         $user = User::find($id);
 
+        // Check if user exists
         if (!$user) {
             return response()->json(['error' => 'user not found'], 404);
         }
 
-        if ($user_authenticated === $user || $user_authenticated->isAdmin()) {
-            return response()->json($this->availableAlbums($user), 200);
-        }
+        // Check if authenticated user can provide action
+        $this->authorize($user);
 
-        return response()->json(['error' => 'Forbidden to see albums of this user'], 403);
+        // If authorized - return all user's albums
+        return response()->json($user->allAlbums(), 200);
     }
 
     /**
@@ -213,14 +222,14 @@ class UserController extends Controller
      * @apiGroup Users
      *
      * @apiParam {Number} id Users unique ID.
-     * 
+     *
      * @apiParam (Login) {String} TokenController Only logged in users can post this.
      *                                 In generated documentation a separate
      *                                 "Login" Block will be generated.
      *
      * @apiParam (Validation) {String} UserRequest Only passed validation requests can go here.
      *                                 In generated documentation a separate
-     *                                 "Validate" Block will be generated.     
+     *                                 "Validate" Block will be generated.
      *
      * @apiPermission admin
      * @apiPermission owner
@@ -267,25 +276,39 @@ class UserController extends Controller
      *     {
      *       "error": "Forbidden to update this user"
      *     }
+     * @param $id
+     * @param UserRequest $request
+     * @return
      */
-    public function update($id, UserRequest $request)
+    public function update($id, UserUpdateRequest $request)
     {
-        $user_authenticated = auth()->user();
+        // Find requested user
         $user = User::find($id);
 
+        // Check if it exists
         if (!$user) {
             return response()->json(['error' => 'user not found'], 404);
         }
 
-        if ($user_authenticated === $user || $user->role === 'admin') {
-            $user->update([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
-            ]);
-            return response()->json($user, 200);
+        // Authorize update request
+        $this->authorize($user);
+
+        // Check if request is not empty
+        if ( empty($request->all()) ) {
+            return response()->json(['error' => 'request is empty'], 400);
         }
-        return response()->json(['error' => 'Forbidden to update this user'], 403);
+
+        // Gather update information except password
+        $update_info = $request->except('password');
+
+        // If password field is present - hash password
+        if ($request->has('password')) {
+            $update_info['password'] = Hash::make($request['password']);
+        }
+
+        // Update user and return response
+        $user->update($update_info);
+        return response()->json($user, 200);
     }
 
     /**
@@ -318,15 +341,20 @@ class UserController extends Controller
      *     {
      *       "error": "user not found"
      *     }
+     * @param $id
+     * @return
      */
     public function destroy($id)
     {
+        // Find user
         $user = User::find($id);
 
+        // Check if user exists
         if (!$user) {
             return response()->json(['error' => 'user not found'], 404);
         }
 
+        // Delete user and return response
         $user->delete();
         return response()->json('Successfully deleted', 200);
     }
@@ -364,10 +392,12 @@ class UserController extends Controller
      *          "created_at": "2016-04-10 13:43:16",
      *          "updated_at": "2016-04-10 13:43:16"
      *      }
-     *
+     * @param UserRequest $request
+     * @return
      */
     public function store(UserRequest $request)
     {
+        // Create new user
         $user = User::create([
             'name' => $request['name'],
             'email' => $request['email'],
@@ -376,19 +406,5 @@ class UserController extends Controller
         ]);
         
         return response()->json($user, 201);
-    }
-
-    private function availableAlbums(User $user) {
-        $availableAlbums = $user->availableAlbums;
-        $ownAlbums = $user->ownAlbums;
-        $response = array();
-
-        if (sizeof($availableAlbums)>0) {
-            $response['availableAlbums'] = $availableAlbums;
-        }
-        if (sizeof($ownAlbums)>0) {
-            $response['ownAlbums'] = $ownAlbums;
-        }
-        return $response;
     }
 }

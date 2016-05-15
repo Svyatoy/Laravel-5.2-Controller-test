@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Http\Requests\AlbumRequest;
-use App\User;
-use Carbon\Carbon;
 use JWTAuth;
 
 class AlbumController extends Controller
@@ -15,7 +13,9 @@ class AlbumController extends Controller
      */
     public function __construct()
     {
+        // User authentication check. Only authenticated user can access to albums
         $this->middleware('jwt.auth');
+        // Admin role check. Only admins can see list of all albums
         $this->middleware('admin', ['only'=>['index']]);
     }
 
@@ -62,7 +62,7 @@ class AlbumController extends Controller
      */
     public function index()
     {
-        return response()->json(Album::all())->setStatusCode(200);
+        return response()->json(Album::all(), 200);
     }
 
     /**
@@ -106,7 +106,7 @@ class AlbumController extends Controller
      *          "updated_at": "2016-04-10 13:51:21"
      *      }
      *     ]
-     * 
+     *
      * @apiErrorExample {json} Error-Response:
      *     HTTP/1.1 404 Not Found
      *     {
@@ -115,27 +115,26 @@ class AlbumController extends Controller
      * @apiErrorExample {json} Error-Response:
      *     HTTP/1.1 403 Forbidden
      *     {
-     *       "error": "Forbidden to see this album"
+     *       "error": "Not Authorized"
      *     }
+     * @param $id
+     * @return
      */
     public function show($id)
     {
+        // Find the album by id
         $album = Album::find($id);
-        $user = auth()->user();
 
-        if ($user->isAdmin()){
-            return $album;
-        }else {
-            if ($album) {
-                if ($this->isAvailable($user, $album)) {
-                    return response()->json($album, 200);
-                } else {
-                    return response()->json(['error' => 'Forbidden to see this album'], 403);
-                }
-            } else {
-                return response()->json(['error' => 'Album not found'], 404);
-            }
+        // If album does not exists
+        if (!$album) {
+            return response()->json(['error' => 'Album not found'], 404);
         }
+
+        // Authorize show request to authenticated user
+        $this->authorize($album);
+
+        // If authorization passed - return album
+        return response()->json($album, 200);
     }
 
     /**
@@ -151,7 +150,8 @@ class AlbumController extends Controller
      * {
      *    "Authorization": "Bearer token_value"
      * }
-     *
+     * 
+     * @param AlbumRequest $request
      * @apiParam {String} name Mandatory Album name.
      * @apiParam {String} description Mandatory Album description.
      * @apiParam {String} public Mandatory Album visibility attribute.
@@ -183,16 +183,17 @@ class AlbumController extends Controller
      *          "updated_at": "2016-04-10 13:51:21"
      *      }
      *     ]
-     *
+     * @return
      */
     public function store(AlbumRequest $request)
     {
+        // Create new Album object
         $album = new Album($request->all());
+        
+        // Get the authenticated user
         $user = auth()->user();
-
-        /**
-         * Add relations to created album
-         * */
+        
+        // Add relations to created album
         $user->ownAlbums()->save($album);
 
         return response()->json($album, 201);
@@ -217,6 +218,9 @@ class AlbumController extends Controller
      * {
      *    "Authorization": "Bearer token_value"
      * }
+     *
+     * @param $id
+     * @param AlbumRequest $request
      *
      * @apiParam {String} name Mandatory Album name.
      * @apiParam {String} description Mandatory Album description.
@@ -260,31 +264,31 @@ class AlbumController extends Controller
      *     {
      *       "error": "Forbidden to see this album"
      *     }
-     *
+     * @return
      */
     public function update($id, AlbumRequest $request)
     {
+        // Find Album by id
         $album = Album::find($id);
-        $user = auth()->user();
 
+        // Check if album exists
         if (!$album) {
             return response()->json(['error'=>'Album not found'], 404);
-        }else{
-            /**
-             * Check if user is admin, owner or have permission to change album.
-             * */
-            if ($this->isAvailableToChange($user, $album)||$user->isAdmin()) {
-                $album->update($request->all());
-                return response()->json($album, 204);
-            } else {
-                return response()->json(['error' => 'Forbidden to update this album'], 403);
-            }
         }
+        
+        // Authorize update request
+        $this->authorize($album);
+
+        // If authorization passed - update album and return it with response
+        $album->update($request->all());
+        return response()->json($album, 204);
     }
 
     /**
-     * @api {delete} /api/v1.1/albums/:id  Update Album
+     * @api {delete} /api/v1.1/albums/:id  Delete Album
      * @apiGroup Albums
+     *
+     * @param $id
      *
      * @apiParam {Number} id Album unique ID.
      *
@@ -318,37 +322,23 @@ class AlbumController extends Controller
      *     {
      *       "error": "Forbidden to delete this album"
      *     }
-     *
+     * @return
      */
     public function destroy($id)
     {
+        // Find album by id
         $album = Album::find($id);
-        $user = auth()->user();
         
+        // Check if album exists
         if (!$album) {
             return response()->json(['error'=>'Album not found'], 404);
-        }elseif ($user->isAdmin()||$this->isAvailableToChange($user, $album)) {
-            $album->delete();
-            return response()->json(['Successfully deleted'], 200);
-        }else{
-            return response()->json(['error'=>'Forbidden to delete this album'], 403);
         }
-    }
-
-    private function isAvailable(User $user, Album $album ) {
-        if ($album->owner() === $user || in_array($user, array($album->available_users()))) {
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    private function isAvailableToChange(User $user, Album $album ) {
-        if ($album->owner() === $user || in_array($user, array($album->available_users()
-                                                                ->wherePivot('permission' == 'write')))) {
-            return true;
-        }else{
-            return false;
-        }
+        
+        // Authorize delete request
+        $this->authorize($album);
+        
+        // If authorization passed - delete album and return success response
+        $album->delete();
+        return response()->json(['Successfully deleted'], 200);
     }
 }

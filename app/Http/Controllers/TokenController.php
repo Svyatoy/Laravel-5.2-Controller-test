@@ -120,25 +120,22 @@ class TokenController extends Controller
     public function getAuthenticatedUser()
     {
         try {
-
+            // Try to authenticate user
             if (! $user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['error' => 'user_not_found'], 404);
             }
-
         } catch (TokenExpiredException $e) {
-
+            // Check if token expired
             return response()->json(['error' => 'token_expired'], $e->getStatusCode());
 
         } catch (TokenInvalidException $e) {
-
+            // Check if token valid
             return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
 
         } catch (JWTException $e) {
-
+            // Check if token present
             return response()->json(['error' => 'token_absent'], $e->getStatusCode());
-
         }
-
         // the token is valid and we have found the user via the sub claim
         return response()->json(compact('user'));
     }
@@ -180,17 +177,19 @@ class TokenController extends Controller
     public function refresh()
     {
         try {
+                // Try to get and check current token
                 $current_token  = JWTAuth::getToken();
+                // If try was success - refresh token
                 $token          = JWTAuth::refresh($current_token);
-
+                // And return it to user
                 return response()->json(compact('token'));
 
         } catch (TokenInvalidException $e) {
-
+            // Check if token valid
             return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
 
         } catch (JWTException $e) {
-
+            // Check if token present
             return response()->json(['error' => 'token_absent'], $e->getStatusCode());
         }
     }
@@ -230,17 +229,16 @@ class TokenController extends Controller
     public function logout()
     {
         try {
-
+            // Try to invalidate given token
             JWTAuth::invalidate(JWTAuth::getToken());
-
             return response()->json('success', 200);
 
         } catch (TokenInvalidException $e) {
-
+            // Check if token valid
             return response()->json(['error' => 'token_invalid'], $e->getStatusCode());
 
         } catch (JWTException $e) {
-
+            // Check if token present
             return response()->json(['error' => 'token_absent'], $e->getStatusCode());
         }
     }

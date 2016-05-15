@@ -6,7 +6,7 @@ use Illuminate\Http\Exception\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\JsonResponse;
 
-class AlbumRequest extends Request
+class AlbumUpdateRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,12 +16,12 @@ class AlbumRequest extends Request
     public function rules()
     {
         return [
-            'name' => 'required|filled|min:3',
-            'description' => 'required|filled|min:3',
-            'public' => 'required|filled|bool',
+            'name' => 'filled|min:3',
+            'description' => 'filled|min:3',
+            'public' => 'filled|bool',
         ];
     }
-
+    
     /**
      * Bad validation errors output.
      *
@@ -44,5 +44,4 @@ class AlbumRequest extends Request
     {
         return new JsonResponse($errors, 422);
     }
-
 }

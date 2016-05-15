@@ -8,7 +8,7 @@ use JWTAuth;
 class AdminMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Handle an incoming request for admin check.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
